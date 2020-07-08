@@ -13,7 +13,7 @@ function main() {
   fi
 
   data_name=$1
-  method=$1
+  method=$2
 
   trap exit SIGINT
 
@@ -24,6 +24,7 @@ function main() {
 
       for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
         ./run_method.sh "${data_name}" "${rand_sd}" "${pct_lbl}" "eval" "${sub_method}"
+
       done
     done
   done
