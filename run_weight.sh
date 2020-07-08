@@ -19,13 +19,11 @@ function main() {
 
   # eval the data
   for pct_lbl in 01 05 10 20 30 40 50 60 70 80 90 95; do
-    for sub_method in method; do
-      ./run_method.sh "${data_name}" "4212" "${pct_lbl}" "learn" "${sub_method}"
+    ./run_method.sh "${data_name}" "4212" "${pct_lbl}" "learn" "${method}"
 
-      for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
-        ./run_method.sh "${data_name}" "${rand_sd}" "${pct_lbl}" "eval" "${sub_method}"
+    for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
+      ./run_method.sh "${data_name}" "${rand_sd}" "${pct_lbl}" "eval" "${method}"
 
-      done
     done
   done
 
