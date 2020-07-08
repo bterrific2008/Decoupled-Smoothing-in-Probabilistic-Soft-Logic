@@ -8,10 +8,10 @@ from pathlib import Path
 import numpy as np
 
 import parsing as parse_mat
-import snowball_sampling as snowball_sampling
+import snowball_sampling as snowball
 
 
-def generate_data(random_seed=1, school_data='Amherst41.mat', learn=False):
+def generate_data(random_seed = 1, school_data='Amherst41.mat', learn=False):
     """
     Generates data
 
@@ -35,7 +35,7 @@ def generate_data(random_seed=1, school_data='Amherst41.mat', learn=False):
                                                                                    "learning" if learn
                                                                                    else "evaluation",
                                                                                    random_seed))
-        write_files_snowball_sampling(adj_matrix, gender_y, random_seed, pct_label,
+        write_files(adj_matrix, gender_y, random_seed, pct_label,
                     school_data, learn)
 
 
@@ -43,7 +43,7 @@ def generate_data(random_seed=1, school_data='Amherst41.mat', learn=False):
 def create_dict(key, obj):
         return (dict([(key[i], obj[i]) for i in range(len(key))]))
 
-def parse_data(school_data = 'Amherst41.mat', snowball_sampling = False, target_percent=0.9, random_seed=1, k=10):
+def parse_data(school_data = 'Amherst41.mat', snowball_sampling = True, target_percent=0.9, random_seed=1, k=10):
     """
     Converts the mat file
 
@@ -66,13 +66,13 @@ def parse_data(school_data = 'Amherst41.mat', snowball_sampling = False, target_
     # get the gender for each node(values = 1,2,0 for missing)
     gender_y_tmp = metadata[:,1]
 
+    G = nx.from_numpy_matrix(adj_matrix_tmp)
+
     # if we use snowball sampling:
-    if snowball_sampling:
-        # get node list
-        original_node_list = list(A.nodes())
+    if snowball_sampling == True:
         # preform snowball sampling
-        model = snowball_sampling.Snowball()
-        sampled_graph = model.snowball(A, target_precent=target_percent, k=k,
+        model = snowball.Snowball()
+        sampled_graph = model.snowball(G, target_precent=target_percent, k=k,
                                        random_seed=random_seed)
         # get node list of the new sampled_graph
         new_node_list = list(sampled_graph.nodes())
@@ -94,7 +94,7 @@ def parse_data(school_data = 'Amherst41.mat', snowball_sampling = False, target_
     return adj_matrix_list, gender_y
 
 
-def write_files_snowball_sampling(adj_matrix, gender_y, random_seed=1, percent_labeled=0.01,
+def write_files(adj_matrix, gender_y, random_seed=1, percent_labeled=0.01,
                 data_name='Amherst41', learn=False):
     """
 
@@ -177,7 +177,7 @@ def write_files_snowball_sampling(adj_matrix, gender_y, random_seed=1, percent_l
             open(gender_train_indicies, 'w+') as f_train_index:
 
         for gender_i, gender in (gender2[:split]):
-            if gender > 0: # TODO this drops the unlabeld data, but that should be handled by parse_data instead
+            if gender > 0:
                 f_train_index.write('{}\n'.format(gender_i))
                 f_obs.write('{0}\t{1}\t{2}\n'.format(gender_i, 1, float(gender == 1)))
                 f_obs.write('{0}\t{1}\t{2}\n'.format(gender_i, 2, float(gender == 2)))
@@ -200,7 +200,6 @@ def write_files_snowball_sampling(adj_matrix, gender_y, random_seed=1, percent_l
                 f_target.write('{0}\t2\n'.format(gender_i))
                 f_truth.write('{0}\t{1}\t{2}\n'.format(gender_i, 1, 0.5))
                 f_truth.write('{0}\t{1}\t{2}\n'.format(gender_i, 2, 0.5))
-
         # for gender_i in gender_unknown:
         #     f_target.write('{0}\t1\n'.format(gender_i))
         #     f_target.write('{0}\t2\n'.format(gender_i))
