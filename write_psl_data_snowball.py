@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 import parsing as parse_mat
-import snowball_sampling as snowball_sampling
+import snowball_sampling as snow
 
 
 def generate_data(random_seed=1, school_data='Amherst41.mat', learn=False):
@@ -43,7 +43,7 @@ def generate_data(random_seed=1, school_data='Amherst41.mat', learn=False):
 def create_dict(key, obj):
         return (dict([(key[i], obj[i]) for i in range(len(key))]))
 
-def parse_data(school_data = 'Amherst41.mat', snowball_sampling = False, target_percent=0.9, random_seed=1, k=10):
+def parse_data(school_data = 'Amherst41.mat', snowball_sampling = True, target_percent=0.9, random_seed=1, k=10):
     """
     Converts the mat file
 
@@ -69,10 +69,11 @@ def parse_data(school_data = 'Amherst41.mat', snowball_sampling = False, target_
     # if we use snowball sampling:
     if snowball_sampling:
         # get node list
-        original_node_list = list(A.nodes())
+        G = nx.from_scipy_sparse_matrix(A)
+        original_node_list = list(G.nodes())
         # preform snowball sampling
-        model = snowball_sampling.Snowball()
-        sampled_graph = model.snowball(A, target_precent=target_percent, k=k,
+        model = snow.Snowball()
+        sampled_graph = model.snowball(G, target_precent=target_percent, k=k,
                                        random_seed=random_seed)
         # get node list of the new sampled_graph
         new_node_list = list(sampled_graph.nodes())
