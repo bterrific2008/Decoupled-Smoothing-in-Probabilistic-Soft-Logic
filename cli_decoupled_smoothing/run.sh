@@ -1,160 +1,159 @@
 #!/bin/bash
-# Run a decoupled smoothing method on a single data variation
+
+# Options can also be passed on the command line.
+# These options are blind-passed to the CLI.
+# Ex: ./run.sh -D log4j.threshold=DEBUG
+
+readonly PSL_VERSION='CANARY-2.3.0'
+readonly JAR_PATH="./psl-cli-${PSL_VERSION}.jar"
+readonly BASE_NAME='gender'
 
 readonly THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly BASE_DATA_DIR="${THIS_DIR}/data"
+readonly DATA_NAME="Amherst41"
 readonly BASE_OUT_DIR="${THIS_DIR}/results"
 
 readonly ADDITIONAL_PSL_OPTIONS='--int-ids -D random.seed=12345 -D log4j.threshold=debug -D log4j.threshold=TRACE --postgres btor'
 readonly ADDITIONAL_LEARN_OPTIONS='--learn GaussianProcessPrior -D weightlearning.evaluator=RankingEvaluator -D rankingevaluator.representative=AUROC'
 readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval CategoricalEvaluator RankingEvaluator'
 
-# An identifier to differentiate the output of this script/experiment from other scripts.
 readonly RUN_ID='decoupled-smoothing'
 
-function display_help() {
-  echo "USAGE: $0 <data> <random seed> <percent labeled> {learn|eval} <method dir> ..."
-  exit 1
-}
-
-function generate_data() {
-  random_seed=$1
-  data_name=$2
-  train_test=$3
-
-  printf -v seed_nm "%04d" $random_seed
-  local logPath="${BASE_DATA_DIR}/${train_test}/${data_name}/01pct/${seed_nm}rand/data_log.json"
-  echo "${logPath}"
-
-  if [[ -e "${logPath}" ]]; then
-    echo "Output data already exists, skipping data generation"
-  elif [ "$train_test" = learn ]; then
-    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data.py --seed ${random_seed} --data ${data_name}.mat --learn
-  else
-    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data.py --seed ${random_seed} --data ${data_name}.mat
-  fi
-}
-
-function run_psl() {
-  local cliDir=$1
-  local outDir=$2
-  local extraOptions=$3
-  local data_nm=$4
-  local rand_sd=$5
-  local pct_lbl=$6
-  local learn_eval=$7
-
-  mkdir -p "${outDir}"
-
-  local outPath="${outDir}/out${pct_lbl}${learn_eval}.txt"
-  local errPath="${outDir}/out${pct_lbl}${learn_eval}.err"
-  local timePath="${outDir}/time${pct_lbl}${learn_eval}.txt"
-
-  if [[ -e "${outPath}" ]]; then
-    echo "Output file already exists, skipping: ${outPath}"
-    return 0
-  fi
-
-  if [ $learn_eval == 'learn' ]; then
-    pushd . >/dev/null
-    cd "${cliDir}"
-
-    # fix the data settings
-    sed "s/learn_eval/learn/g ; s/rand_sd/${rand_sd}rand/g ; s/pct_lbl/${pct_lbl}pct/g ; s/data_nm/${data_nm}/g" \
-      base.data >gender-learn.data
-
-    # Run PSL.
-    /usr/bin/time -v --output="${timePath}" ./run-learn.sh ${extraOptions} >"${outPath}" 2>"${errPath}"
-
-    # Copy any artifacts into the output directory.
-    # cp -R inferred-predicates "${outDir}/inferred-predicates${pct_lbl}"
-    cp *.data "${outDir}/"
-    cp *.psl "${outDir}/"
-    popd >/dev/null
-  else
-    pushd . >/dev/null
-    cd "${cliDir}"
-
-    # fix the data settings
-    sed "s/learn_eval/eval/g ; s/rand_sd/${rand_sd}rand/g ; s/pct_lbl/${pct_lbl}pct/g ; s/data_nm/${data_nm}/g" \
-      base.data >gender-eval.data
-
-    # Run PSL.
-    /usr/bin/time -v --output="${timePath}" ./run-eval.sh ${extraOptions} >"${outPath}" 2>"${errPath}"
-
-    # Copy any artifacts into the output directory.
-    cp -R inferred-predicates "${outDir}/inferred-predicates${pct_lbl}"
-    cp *.data "${outDir}/"
-    cp *.psl "${outDir}/"
-    popd >/dev/null
-  fi
-
-}
-
-function run_method() {
-  local exampleDir=$1
-  local data_nm=$2
-  local rand_sd=$3
-  local pct_lbl=$4
-  local learn_eval=$5
-
-  local exampleName=$(basename "${exampleDir}")
-  local cliDir="$exampleDir"
-  local outDir="${BASE_OUT_DIR}/${RUN_ID}/${learn_eval}/${exampleName}/${data_nm}/${rand_sd}"
-
-  local options=""
-  case $learn_eval in
-  learn)
-    options="${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS}"
-    ;;
-  eval)
-    options="${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS}"
-    ;;
-  *)
-    options="${ADDITIONAL_PSL_OPTIONS}"
-    ;;
-  esac
-
-  echo "Running ${exampleName} -- ${RUN_ID}."
-
-  run_psl "${cliDir}" "${outDir}" "${options}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}"
-}
-
 function main() {
-
-  if [[ $# -eq 0 ]]; then
-    echo "USAGE: $0 <data> <random seed> <percent labeled> {learn|eval}"
-    exit 1
-  fi
-
-  if [ "$1" == "-h" ]; then
-    display_help
-  fi
-
-  local data_nm=$1
-  shift
-
-  local rand_sd=$(printf "%04d" $1)
-  shift
-
-  # TODO make this work with floating point numbers
-  local pct_lbl=$1
-  shift
-
-  local learn_eval=$1
-  shift
-
   trap exit SIGINT
 
-  echo "data used: ${data_nm} | random seed: ${rand_sd} | percent labeled:${pct_lbl} | train test: ${learn_eval}"
-  generate_data "${rand_sd}" "${data_nm}" "${learn_eval}"
+  # Make sure we can run PSL.
+  checkRequirements
+  fetchPsl
 
-  for exampleDir in "$@"; do
-    echo "running: ${exampleDir}"
-    run_method "${exampleDir}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}" "${i}"
+  # eval the data
+  for pct_lbl in 01 05 10 20 30 40 50 60 70 80 90 95; do
+    generateData "4212" "learn"
+    updateData "learn" "4212" "${pct_lbl}"
+    runWeightLearn "$@"
+
+    for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
+      generateData "${rand_sd}" "eval"
+      updateData "eval" "${rand_sd}" "${pct_lbl}"
+      runEvaluation "$@"
+    done
   done
 }
 
-[[ "${BASH_SOURCE[0]}" == "${0}" ]] && main "$@"
+function generateData() {
+  random_seed=$1
+  learn_eval=$3
+
+  printf -v seed_nm "%04d" $random_seed
+  local logPath="${BASE_DATA_DIR}/${learn_eval}/${BASE_NAME}/01pct/${seed_nm}rand/data_log.json"
+
+  if [[ -e "${logPath}" ]]; then
+    echo "Output data already exists, skipping data generation"
+  elif [ "$learn_eval" = learn ]; then
+    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
+    python3 ../write_psl_data.py --seed ${random_seed} --data ${data_name}.mat --learn
+  else
+    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
+    python3 ../write_psl_data.py --seed ${random_seed} --data ${data_name}.mat
+  fi
+}
+
+function updateData() {
+  local learn_eval=$1
+  local rand_sd=$2
+  local pct_lbl=$3
+
+  sed "s/learn_eval/${learn_eval}/g ; s/rand_sd/${rand_sd}rand/g ; s/pct_lbl/${pct_lbl}pct/g ; s/data_nm/${DATA_NAME}/g" \
+      base.data > "gender-${learn_eval}.data"
+}
+
+function runWeightLearning() {
+  echo "Running PSL Weight Learning"
+
+  java -jar "${JAR_PATH}" --model "${BASE_NAME}.psl" --data "${BASE_NAME}-learn.data" ${ADDITIONAL_LEARN_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+  if [[ "$?" -ne 0 ]]; then
+    echo 'ERROR: Failed to run weight learning'
+    exit 60
+  fi
+}
+
+function runEvaluation() {
+  echo "Running PSL Inference"
+
+  java -jar "${JAR_PATH}" --model "${BASE_NAME}-learned.psl" --data "${BASE_NAME}-eval.data" --output inferred-predicates ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+  if [[ "$?" -ne 0 ]]; then
+    echo 'ERROR: Failed to run infernce'
+    exit 70
+  fi
+}
+
+function checkRequirements() {
+  local hasWget
+  local hasCurl
+
+  type wget >/dev/null 2>/dev/null
+  hasWget=$?
+
+  type curl >/dev/null 2>/dev/null
+  hasCurl=$?
+
+  if [[ "${hasWget}" -ne 0 ]] && [[ "${hasCurl}" -ne 0 ]]; then
+    echo 'ERROR: wget or curl required to download dataset'
+    exit 10
+  fi
+
+  type java >/dev/null 2>/dev/null
+  if [[ "$?" -ne 0 ]]; then
+    echo 'ERROR: java required to run project'
+    exit 13
+  fi
+}
+
+function get_fetch_command() {
+  type curl >/dev/null 2>/dev/null
+  if [[ "$?" -eq 0 ]]; then
+    echo "curl -o"
+    return
+  fi
+
+  type wget >/dev/null 2>/dev/null
+  if [[ "$?" -eq 0 ]]; then
+    echo "wget -O"
+    return
+  fi
+
+  echo 'ERROR: wget or curl not found'
+  exit 20
+}
+
+function fetch_file() {
+  local url=$1
+  local path=$2
+  local name=$3
+
+  if [[ -e "${path}" ]]; then
+    echo "${name} file found cached, skipping download."
+    return
+  fi
+
+  echo "Downloading ${name} file located at: '${url}'."
+  $(get_fetch_command) "${path}" "${url}"
+  if [[ "$?" -ne 0 ]]; then
+    echo "ERROR: Failed to download ${name} file"
+    exit 30
+  fi
+}
+
+# Fetch the jar from a remote or local location and put it in this directory.
+# Snapshots are fetched from the local maven repo and other builds are fetched remotely.
+function fetchPsl() {
+  if [[ $PSL_VERSION == *'SNAPSHOT'* ]]; then
+    local snapshotJARPath="$HOME/.m2/repository/org/linqs/psl-cli/${PSL_VERSION}/psl-cli-${PSL_VERSION}.jar"
+    cp "${snapshotJARPath}" "${JAR_PATH}"
+  else
+    local remoteJARURL="https://repo1.maven.org/maven2/org/linqs/psl-cli/${PSL_VERSION}/psl-cli-${PSL_VERSION}.jar"
+    fetch_file "${remoteJARURL}" "${JAR_PATH}" 'psl-jar'
+  fi
+}
+
+main "$@"
