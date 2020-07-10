@@ -35,7 +35,7 @@ function main() {
     for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
       generateData "${rand_sd}" "eval"
       updateData "eval" "${rand_sd}" "${pct_lbl}"
-      runEvaluation "$@"
+      runEvaluation "${pct_lbl}" "$@"
     done
   done
 }
@@ -79,8 +79,10 @@ function runWeightLearning() {
 
 function runEvaluation() {
   echo "Running PSL Inference"
+  local pct_lbl=$1
+  shift
 
-  java -jar "${JAR_PATH}" --model "${BASE_NAME}-learned.psl" --data "${BASE_NAME}-eval.data" --output inferred-predicates ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
+  java -jar "${JAR_PATH}" --model "${BASE_NAME}-learned.psl" --data "${BASE_NAME}-eval.data" --output "inferred-predicates${pct_lbl}" ${ADDITIONAL_EVAL_OPTIONS} ${ADDITIONAL_PSL_OPTIONS} "$@"
   if [[ "$?" -ne 0 ]]; then
     echo 'ERROR: Failed to run infernce'
     exit 70
