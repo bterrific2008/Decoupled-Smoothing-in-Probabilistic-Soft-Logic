@@ -41,8 +41,7 @@ class Snowball():
         # create a set to hold the set of nodes that has been explored
         explored_node_set = set()
         # create another set to hold the set of nodes that will in included in the sampled_graph
-        #new_graph_node_set = set()
-        new_graph_node_set = list()
+        new_graph_node_set = set()
         # get the list of nodes in the origional graph G
         list_nodes = list(G.nodes())
         
@@ -60,8 +59,8 @@ class Snowball():
             if(q.size() > 0):
                 id = q.dequeue()
                 # add this current node into the new graph
-                #new_graph_node_set.add(id)
-                new_graph_node_set.append(id)
+                new_graph_node_set.add(id)
+            
                 # if this node has not been explored before
                 if(id not in explored_node_set):
                     explored_node_set.add(id)
@@ -73,14 +72,13 @@ class Snowball():
                     if(len(list_neighbors) > k):
                         for x in list_neighbors[:k]:
                             q.enqueue(x)
-                            #new_graph_node_set.add(x)
-                            new_graph_node_set.append(x)
+                            new_graph_node_set.add(x)
                     # else if there're less than k neighbors but there're still neighbor exists
                     elif(len(list_neighbors) <= k and len(list_neighbors) > 0):
                         for x in list_neighbors:
                             q.enqueue(x)
-                            #new_graph_node_set.add(x)
-                            new_graph_node_set.append(x)
+                            new_graph_node_set.add(x)
+                            
                 else:
                     continue
             # if the queue is empty, then sample another node which hasn't been seen before
