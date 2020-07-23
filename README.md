@@ -1,4 +1,4 @@
-# Decoupled Smooting in Probabilistic Soft Logic
+# Decoupled Smoothing in Probabilistic Soft Logic
 
 This project implements the concept of Decoupled Smoothing into Probabilistic Soft Logic (PSL). This code provides a set of PSL rules for one hop (homophily), two hop (monophily), and decoupled smoothing methods.
 
