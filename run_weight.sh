@@ -23,7 +23,6 @@ function main() {
 
     for rand_sd in 1 12345 837 2841 4293 6305 6746 9056 9241 9547; do
       ./run_method.sh "${data_name}" "${rand_sd}" "${pct_lbl}" "eval" "${method}"
-
     done
   done
 

@@ -1,2 +1,8 @@
 .idea/
 venv/
+results/
+/data/eval/
+/data/learn/
+/index/
+/data/Amherst41.mat
+*csv

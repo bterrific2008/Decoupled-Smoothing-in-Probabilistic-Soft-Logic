@@ -11,10 +11,11 @@ import parsing as parse_mat
 import snowball_sampling as snowball
 
 
-def generate_data(random_seed, school_data='Amherst41.mat', learn=False, snowball_sampling = True):
+def generate_data(random_seed, school_data='Amherst41.mat', learn=False, snowball_sampling=False):
     """
     Generates data
 
+    :param snowball_sampling:
     :param random_seed: (str) random seed used to generate the data
     :param school_data: (str) filename containing the school data
     :param learn: (bool) specifies if the data will be used for learning or evaluation
@@ -29,19 +30,17 @@ def generate_data(random_seed, school_data='Amherst41.mat', learn=False, snowbal
     adj_matrix, gender_y = parse_data(school_data)
 
     # write the data
-    for pct_label in [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]:
-        print('Creating data for {} at {}% labeled for {} with random seed'.format(school_data,
-                                                                                   pct_label,
-                                                                                   "learning" if learn
-                                                                                   else "evaluation",
-                                                                                   random_seed))
+    for pct_label in [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
+        print('Creating data for {} at {}% labeled for {} with random seed {}'
+              .format(school_data, pct_label, "learning" if learn else "evaluation", random_seed))
         write_files(adj_matrix, gender_y, random_seed, pct_label,
                     school_data, learn, snowball_sampling)
 
 
 # function to create dictionary of features
 def create_dict(key, obj):
-        return (dict([(key[i], obj[i]) for i in range(len(key))]))
+    return (dict([(key[i], obj[i]) for i in range(len(key))]))
+
 
 def parse_data(school_data='Amherst41.mat'):
     """
@@ -59,7 +58,6 @@ def parse_data(school_data='Amherst41.mat'):
     data_cwd = '{0}/{1}'.format(os.path.abspath(cwd), 'data')
     fb100_file = '{0}/{1}'.format(data_cwd, school_data)
     A, metadata = parse_mat.parse_fb100_mat_file(fb100_file)
-
 
     # change A(scipy csc matrix) into a numpy matrix
     adj_matrix_tmp = A.todense()
@@ -85,8 +83,8 @@ def parse_data(school_data='Amherst41.mat'):
     return adj_matrix, gender_y
 
 
-def write_files(adj_matrix, gender_y, random_seed, percent_labeled = 0.01,
-                data_name='Amherst41', learn=False, snowball_sampling = False):
+def write_files(adj_matrix, gender_y, random_seed, percent_labeled=0.01,
+                data_name='Amherst41', learn=False, snowball_sampling=False):
     """
     :param adj_matrix:
     :param gender_y:
@@ -158,15 +156,16 @@ def write_files(adj_matrix, gender_y, random_seed, percent_labeled = 0.01,
     gender_test_indicies = indicies_cwd + '/gender_test_indicies_{}rand_{}pct.txt'.format(
         random_seed, percent_labeled)
 
-
     # write out the gender file
     if snowball_sampling == False:
         gender2 = gender_y.copy()
         random.shuffle(gender2)
         split = int(len(gender2) * percent_labeled)
 
-        with open(gender_obs_file, 'w+') as f_obs, open(gender_targets_file, 'w+') as f_target, open(
-                gender_truth_file, 'w+') as f_truth, open(gender_test_indicies, 'w+') as f_test_index, \
+        with open(gender_obs_file, 'w+') as f_obs, open(gender_targets_file,
+                                                        'w+') as f_target, open(
+                gender_truth_file, 'w+') as f_truth, open(gender_test_indicies,
+                                                          'w+') as f_test_index, \
                 open(gender_train_indicies, 'w+') as f_train_index:
 
             for gender_i, gender in (gender2[:split]):
@@ -181,25 +180,25 @@ def write_files(adj_matrix, gender_y, random_seed, percent_labeled = 0.01,
                     f_target.write('{0}\t2\n'.format(gender_i))
                     f_truth.write('{0}\t{1}\t{2}\n'.format(gender_i, 1, float(gender == 1)))
                     f_truth.write('{0}\t{1}\t{2}\n'.format(gender_i, 2, float(gender == 2)))
-
-
     else:
         gender2 = gender_y.copy()
         adj_matrix = np.array(adj_matrix)
         graph = nx.from_numpy_matrix(adj_matrix)
 
         model = snowball.Snowball()
-        sampled_graph = model.snowball(graph, target_precent = percent_labeled, k = 10,
-                                       random_seed = random_seed)
+        sampled_graph = model.snowball(graph, target_precent=percent_labeled, k=10,
+                                       random_seed=random_seed)
         original_set_node = list(graph.nodes())
         train_set_node = list(sampled_graph.nodes())
         test_set_node = list(set(original_set_node) - set(train_set_node))
 
-        with open(gender_obs_file, 'w+') as f_obs, open(gender_targets_file, 'w+') as f_target, open(
-                gender_truth_file, 'w+') as f_truth, open(gender_test_indicies, 'w+') as f_test_index, \
+        with open(gender_obs_file, 'w+') as f_obs, open(gender_targets_file,
+                                                        'w+') as f_target, open(
+                gender_truth_file, 'w+') as f_truth, open(gender_test_indicies,
+                                                          'w+') as f_test_index, \
                 open(gender_train_indicies, 'w+') as f_train_index:
 
-            for index in train_set_node:             
+            for index in train_set_node:
                 if gender2[index][1] > 0:
                     f_train_index.write('{}\n'.format(index))
                     f_obs.write('{0}\t{1}\t{2}\n'.format(index, 1, float(gender2[index][1] == 1)))
@@ -210,13 +209,11 @@ def write_files(adj_matrix, gender_y, random_seed, percent_labeled = 0.01,
                     f_target.write('{0}\t1\n'.format(index))
                     f_target.write('{0}\t2\n'.format(index))
                     f_truth.write('{0}\t{1}\t{2}\n'.format(index, 1, float(gender2[index][1] == 1)))
-                    f_truth.write('{0}\t{1}\t{2}\n'.format(index, 2, float(gender2[index][1] == 2)))        
-        
+                    f_truth.write('{0}\t{1}\t{2}\n'.format(index, 2, float(gender2[index][1] == 2)))
 
     data_log = data_cwd + '/data_log.json'
     with open(data_log, 'w+') as f:
         json.dump(params, f)
-
 
 
 if __name__ == "__main__":
@@ -226,11 +223,13 @@ if __name__ == "__main__":
                            default='Amherst41.mat')
     cli_parse.add_argument("--learn", dest='learn', action='store_true',
                            help='Specifies if this data will be used for learning or not')
-    cli_parse.set_defaults(learn=False)
+    cli_parse.add_argument("--snow", dest='snow', action='store_true',
+                           help='Write data using snowball sampling')
+    cli_parse.set_defaults(learn=False, snow=False)
     args = cli_parse.parse_args()
 
     assert args.seed, "No random seed was provided"
     assert args.data, "No target data was provided"
 
-    generate_data(args.seed, args.data, args.learn)
+    generate_data(args.seed, args.data, learn=args.learn, snowball_sampling=args.snow)
     # generate_data([0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99])
