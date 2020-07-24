@@ -23,16 +23,17 @@ function generate_data() {
   train_test=$3
 
   # printf -v seed_nm "%04d" $random_seed
-  local logPath="${BASE_DATA_DIR}/${train_test}/${data_name}/01pct/${seed_nm}rand/data_log.json"
+  local logPath="${BASE_DATA_DIR}/${train_test}/${data_name}/01pct/${random_seed}rand/data_log.json"
+  echo "Log path: ${logPath}"
 
   if [[ -e "${logPath}" ]]; then
     echo "Output data already exists, skipping data generation"
   elif [ "$train_test" = learn ]; then
     echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat --learn
+    # python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat --learn
   else
     echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat
+    # python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat
   fi
 }
 
@@ -150,10 +151,10 @@ function main() {
   echo "data used: ${data_nm} | random seed: ${rand_sd} | percent labeled:${pct_lbl} | train test: ${learn_eval}"
   generate_data "${rand_sd}" "${data_nm}" "${learn_eval}"
 
-  for exampleDir in "$@"; do
-    echo "running: ${exampleDir}"
-    run_method "${exampleDir}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}" "${i}"
-  done
+  # for exampleDir in "$@"; do
+  #   echo "running: ${exampleDir}"
+  #   run_method "${exampleDir}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}" "${i}"
+  # done
 }
 
 [[ "${BASH_SOURCE[0]}" == "${0}" ]] && main "$@"
