@@ -19,7 +19,11 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 
 ### Reproducing results
 
-To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts. For example, 
+To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts: 
+```
+chmod +x run_method.sh
+chmod +x run_all.sh
+```
 
 `run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
