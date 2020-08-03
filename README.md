@@ -1,17 +1,17 @@
 # Decoupled Smoothing in Probabilistic Soft Logic
 
-This project implements the concept of Decoupled Smoothing into Probabilistic Soft Logic (PSL). This code provides a set of PSL rules for one hop (homophily), two hop (monophily), and decoupled smoothing methods.
+This project implements the idea of Decoupled Smoothing into Probabilistic Soft Logic (PSL). This code provides a set of PSL rules for one-hop method (based on homophily), two-hop method(monophily), and decoupled smoothing methods.
 
 ## Replication code: "Decoupled smoothings on graphs"
 
-The original paper and code for "Decoupled smoothings on graphs" can be found here:
+The original paper and code for "Decoupled Smoothings on Graphs" can be found here:
 
 * [Decoupled smoothing on graphs](https://dl.acm.org/citation.cfm?doid=3308558.3313748) (WWW 2019) - [Alex Chin](https://ajchin.github.io/), [Yatong Chen](https://github.com/YatongChen/), [Kristen M. Altenburger](http://kaltenburger.github.io/), [Johan Ugander](https://web.stanford.edu/~jugander/).
 * [Github Repository](https://github.com/YatongChen/decoupled_smoothing_on_graphs)
 
 ## Machine Learning Framework: "Probabilistic Soft Logic"
 
-Probabilistic Soft Logic is a machine learning framework for developing probabilistic models. You can find more information about PSL available at the [PSL homepage](https://psl.linqs.org/). 
+Probabilistic Soft Logic is a machine learning framework for developing probabilistic models. You can find more information about PSL available at the [PSL homepage](https://psl.linqs.org/) and [examples of PSL](https://github.com/linqs/psl-examples). 
 
 ## Documentation
 
@@ -26,7 +26,7 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 
 ### Reproducing results
 
-To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts.
+To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts. For example, 
 
 `run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
