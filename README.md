@@ -2,20 +2,13 @@
 
 Experiments for "Decoupled Smoothing in Probabilistic Soft Logic".
 
-## Replication code: "Decoupled smoothings on graphs"
+## Probabilistic Soft Logic
 
-The original paper and code for "Decoupled Smoothings on Graphs" can be found here:
-
-* [Decoupled smoothing on graphs](https://dl.acm.org/citation.cfm?doid=3308558.3313748) (WWW 2019) - [Alex Chin](https://ajchin.github.io/), [Yatong Chen](https://github.com/YatongChen/), [Kristen M. Altenburger](http://kaltenburger.github.io/), [Johan Ugander](https://web.stanford.edu/~jugander/).
-* [Github Repository](https://github.com/YatongChen/decoupled_smoothing_on_graphs)
-
-## Machine Learning Framework: "Probabilistic Soft Logic"
-
-Probabilistic Soft Logic is a machine learning framework for developing probabilistic models. You can find more information about PSL available at the [PSL homepage](https://psl.linqs.org/) and [examples of PSL](https://github.com/linqs/psl-examples). 
+Probabilistic Soft Logic (PSL) is a machine learning framework for developing probabilistic models. You can find more information about PSL available at the [PSL homepage](https://psl.linqs.org/) and [examples of PSL](https://github.com/linqs/psl-examples). 
 
 ## Documentation
 
-This repository contains code to run PSL rules for one hop (homophily) and two hop (monophily) methods to predict genders in a social network. 
+This repository contains code to run PSL rules for one-hop method, two-hop method, and decoupled smoothing method for predicting genders in a social network. 
 We provide links to the datasets (Facebook100) in the data sub-folder.
 
 ### Obtaining the data
