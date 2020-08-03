@@ -19,6 +19,8 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 
 ### Reproducing results
 
+1. PSL models:
+
 To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts: 
 ```
 chmod +x run_method.sh
@@ -49,6 +51,13 @@ results/{method run}/{eval|learn}/{data used}/{random seed}/
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
 
+2. Basline Decoupled smoothing model:
+
+To run the baseline decoupled smoothing model, run `baseline_ds.py`.
+
+
+### Evaluatation
+To run the evaluation of each models, run `evaluation.py`, which will generate the two plots in Figure 3 in the paper.
 
 ### Citation
 
