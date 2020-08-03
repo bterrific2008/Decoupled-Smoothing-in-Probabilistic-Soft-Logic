@@ -68,17 +68,19 @@ def parse_mixing_matrix_file(filename):
 
 
 def create_graph(adj_matrix_tmp, dictionary, attribute, val_to_drop, directed_type, delete_na_cols):
-    ##################### data preprocessing(part II) ########################
-    # create graph from adjacency matrix with gender information, delete nodes without gender information, keep only the largest CC
-    # input:
-    # adj_matrix_tmp: an adjacency matrix for the graph
-    # attribute: the property that we want to set for each node
-    # dictionary: (key, value) pairs for each node
-    # val_to_drop: value that needs to be dropped
-    # attribute: which property is considered
-    # return:
-    # a graph with attribute information for each node
-    ##########################################################################
+    """ create graph from adjacency matrix with gender information, 
+        delete nodes without gender information, keep only the largest connected component
+
+    Parameters:
+        - adj_matrix_tmp: an adjacency matrix for the graph
+        - attribute: the property that we want to set for each node
+        - dictionary: (key, value) pairs for each node
+        - val_to_drop: value that needs to be dropped
+        - attribute: which property is considered
+        
+    return:
+        - a graph with attribute information for each node
+    """
     graph = nx.from_numpy_matrix(adj_matrix_tmp)
     # get the label for each person
     keys = np.array(range(len(dictionary.keys())))
