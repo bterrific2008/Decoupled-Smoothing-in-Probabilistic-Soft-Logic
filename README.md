@@ -51,3 +51,21 @@ results/{method run}/{eval|learn}/{data used}/{random seed}/
 
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
+
+
+### Citation
+
+All of these experiments are discussed in the following paper:
+
+```
+@inproceedings{chen:mlg20,
+    title = {Decoupled Smoothing in Probabilistic Soft Logic},
+    author = {Yatong Chen and Byran Tor and Eriq Augustine and Lise Getoor},
+    booktitle = {International Workshop on Mining and Learning with Graphs (MLG)},
+    year = {2020},
+    publisher = {MLG},
+    address = {Virtual},
+}
+```
+
+
