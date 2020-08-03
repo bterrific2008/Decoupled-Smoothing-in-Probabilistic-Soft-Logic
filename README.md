@@ -1,6 +1,6 @@
 # Decoupled Smoothing in Probabilistic Soft Logic
 
-. This code provides a set of PSL rules for one-hop method (based on homophily), two-hop method(monophily), and decoupled smoothing methods.
+Experiments for "Decoupled Smoothing in Probabilistic Soft Logic".
 
 ## Replication code: "Decoupled smoothings on graphs"
 
