@@ -31,7 +31,7 @@ chmod +x generate_data.sh
 
 1. PSL models:
 
-To reproduce the results, run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts: 
+To reproduce the results, run `run_all.sh`. Make sure that permissions are set so you can run these scripts: 
 ```
 chmod +x run_method.sh
 chmod +x run_all.sh
@@ -65,7 +65,7 @@ Running any one of the PSL model will automatically generate the train-test spli
 
 2. Baseline Decoupled smoothing model:
 
-To run the baseline decoupled smoothing model, run `baseline_ds.py`.
+To run the baseline decoupled smoothing model, run `baseline_ds.py`. It will generate a csv file contains the results of the baseline model named `baseline_result.csv`.
 
 
 ### Evaluation
