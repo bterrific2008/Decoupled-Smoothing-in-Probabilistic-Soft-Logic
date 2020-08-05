@@ -18,8 +18,6 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 2. Save raw datasets in placeholder folder data. They should be in the following form: `Amherst41.mat`.
 
 ### Reproducing results
-To reproduce the results, first need to generate the data files.
-
 Make sure that permissions are set so you can run these scripts: 
 ```
 chmod +x generate_data.sh
@@ -28,8 +26,7 @@ chmod +x run_all.sh
 ```
 
 #### Generate input files:
-To generate the predicate, run `generate_data.sh`. 
-
+To reproduce the results, first need to generate the predicate txts, run `generate_data.sh`. 
 
 #### Run the models:
 
