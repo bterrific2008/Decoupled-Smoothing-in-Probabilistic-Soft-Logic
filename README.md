@@ -71,6 +71,16 @@ To run the baseline decoupled smoothing model, run `baseline_ds.py`. It will gen
 ### Evaluation
 To run the evaluation of each models, run `evaluation.py`, which will generate the two plots in Figure 3 in the paper.
 
+
+### Requirements
+These experiments expect that you are running on a POSIX (Linux/Mac) system. The specific application dependencies are as follows:
+
+* Bash >= 4.0
+* PostgreSQL >= 9.5
+* Java >= 7
+* Git
+
+
 ### Citation
 
 All of these experiments are discussed in the following paper:
