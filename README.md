@@ -34,7 +34,7 @@ This takes the following positional parameters:
 * random seed: what seed to use
 * percent labeled: what percentage of labeled data
 * {learn|eval}: specify if you're learning or evaluating
-* method dir: this is the path to the directory you'd like the run
+* method dir: this is the path to the directory you'd like the run (?)
 
 `run_all.sh`: This runs a selected method for all random seeds at all percentages
 
@@ -51,12 +51,14 @@ results/{method run}/{eval|learn}/{data used}/{random seed}/
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
 
-2. Basline Decoupled smoothing model:
+Running any one of the PSL model will automatically generate the train-test split as well as the txt file for the normalized closeFriend predicate.
+
+2. Baseline Decoupled smoothing model:
 
 To run the baseline decoupled smoothing model, run `baseline_ds.py`.
 
 
-### Evaluatation
+### Evaluation
 To run the evaluation of each models, run `evaluation.py`, which will generate the two plots in Figure 3 in the paper.
 
 ### Citation
