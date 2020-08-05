@@ -1,11 +1,6 @@
 #!/bin/bash
 # Run a decoupled smoothing method against all data variations.
 
-readonly THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# An identifier to differentiate the output of this script/experiment from other scripts.
-# readonly RUN_ID='run-all-weight-decoupled-smoothing'
-
 function main() {
   if [[ $# -eq 0 ]]; then
     echo "USAGE: $0 <data name> <method cli_dir>"

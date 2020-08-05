@@ -1,5 +1,5 @@
 import argparse
-import os
+import os, csv
 from operator import add
 from mpl_toolkits.axes_grid1 import Grid
 
@@ -61,7 +61,17 @@ def read_truth(data_nm, random_seed, pct_lbl, learn_eval='eval'):
 
 def read_baseline_results(filepath):
     if filepath:
-        raise NotImplementedError(f'read_baseline_results {filepath}')
+        base_ds_mean = {}
+        base_ds_std = {}
+        with open(filepath) as f:
+            reader = csv.reader(f, delimiter=',')
+            next(reader, None) # skip header
+            for row in reader:
+                if row[0] == 'mean':
+                    base_ds_mean[row[1]] = [row[2], *list(map(float, row[3:]))]
+                if row[0] == 'se':
+                    base_ds_std[row[1]] = [row[2], *list(map(float, row[3:]))]
+        return base_ds_mean, base_ds_std
     return None, None
 
 
@@ -120,28 +130,36 @@ def create_graph(pct_list, results, metric, base_ds_mean=None, base_ds_std=None)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
+    # draw the error bars
+    for name, mean, std, color, line_format in results[:2]:
+        ax.errorbar(npct_list, mean, label=name, fmt=line_format, elinewidth=3,
+                    capthick=2, color=color)
+
     if base_ds_mean and base_ds_std:
-        ax.errorbar(npct_list, base_ds_mean, yerr=base_ds_std, label='DS ORG',
-                    fmt='--o', elinewidth=3, capthick=2, color='blueviolet')
+        for baseline_key in base_ds_mean.keys():
+            ax.errorbar(npct_list, base_ds_mean[baseline_key][1:],
+                        label=baseline_key, fmt='--o', elinewidth=3, capthick=2, color=base_ds_mean[baseline_key][0])
 
     # draw the error bars
-    for name, mean, std, color, line_format in results:
-        ax.errorbar(npct_list, mean, yerr=std, label=name, fmt=line_format, elinewidth=3,
+    for name, mean, std, color, line_format in results[2:]:
+        ax.errorbar(npct_list, mean, label=name, fmt=line_format, elinewidth=3,
                     capthick=2, color=color)
+
+    # plt.legend(loc="upper left", prop=dict(size=8))
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    plt.savefig('PSL-DS {} Figure'.format(metric), figsize=(10, 10), dpi=100)
 
     # add the legend
     figlegend = plt.figure()
     ax_leg = figlegend.add_subplot(111)
     legend = ax_leg.legend(*ax.get_legend_handles_labels(), loc='center', ncol=6, frameon=False)
     ax_leg.axis('off')
-    # plt.legend(loc="upper left", prop=dict(size=8))
-    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
 
     # plt.show()
-    plt.savefig('PSL-DS {} Figure'.format(metric), figsize=(10, 10), dpi=100)
+    # TODO fix bug where both appear the same
     figlegend.savefig('PSL-DS {} Legend'.format(metric),
-                      bbox_inches=legend.get_window_extent().transformed(
-                          figlegend.dpi_scale_trans.inverted()))
+                     bbox_inches=legend.get_window_extent().transformed(
+                         figlegend.dpi_scale_trans.inverted()))
     fig.clf()
 
 
@@ -290,7 +308,7 @@ def parse_arguments():
                         default=['tp_roc', 'cat'],
                         help='specify which metric you want to evaluate with (default is all)')
     parser.add_argument('-p', '--percentages', nargs='*', type=float,
-                        default=[0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+                        default=[0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95],
                         help='specify which percentages to evaluate')
     parser.add_argument('-r', '--random_seeds', nargs='*', type=int,
                         default=[1, 12345, 837, 2841, 4293, 6305, 6746, 9056, 9241, 9547],

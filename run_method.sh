@@ -18,11 +18,10 @@ function display_help() {
 }
 
 function generate_data() {
-  random_seed=$1
+  random_seed=$(printf "%04d" $1)
   data_name=$2
   train_test=$3
 
-  # printf -v seed_nm "%04d" $random_seed
   local logPath="${BASE_DATA_DIR}/${train_test}/${data_name}/01pct/${random_seed}rand/data_log.json"
   echo "Log path: ${logPath}"
 
@@ -93,7 +92,7 @@ function run_psl() {
 
 }
 
-function run_method() {
+function run() {
   local exampleDir=$1
   local data_nm=$2
   local rand_sd=$3
@@ -153,7 +152,7 @@ function main() {
 
   for exampleDir in "$@"; do
     echo "running: ${exampleDir}"
-    run_method "${exampleDir}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}" "${i}"
+    run "${exampleDir}" "${data_nm}" "${rand_sd}" "${pct_lbl}" "${learn_eval}" "${i}"
   done
 }
 

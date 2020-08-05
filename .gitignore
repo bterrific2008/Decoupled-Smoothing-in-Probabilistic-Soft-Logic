@@ -1,6 +1,7 @@
 .idea/
 venv/
 results/
+results-old/
 /data/eval/
 /data/learn/
 /index/
