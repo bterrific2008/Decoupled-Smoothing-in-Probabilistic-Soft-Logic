@@ -32,7 +32,7 @@ To reproduce the results, first need to generate the predicate txts, run `genera
 
 1. PSL models:
 
-To reproduce the results, run `run_all.sh`. 
+To reproduce the results, run  `./run_all.sh`
 
 `run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
