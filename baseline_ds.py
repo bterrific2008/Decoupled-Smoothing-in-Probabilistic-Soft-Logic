@@ -15,6 +15,8 @@ import itertools
 
 from numpy.linalg import inv
 
+import csv
+
 import parsing as parse_mat
 
 ## function to create + save dictionary of features
@@ -25,10 +27,10 @@ def create_dict(key, obj):
 # set the working directory and import helper functions
 #get the current working directory and then redirect into the functions under code 
 cwd = os.getcwd()
-print("cwd", cwd)
+#print("cwd", cwd)
 # import the data from the data folder
 data_cwd = cwd+ '/data'
-print("data_cwd ", data_cwd )
+#print("data_cwd ", data_cwd )
 
 # change the working directory and import the fb dataset
 fb100_file = data_cwd +'/Amherst41'
@@ -47,7 +49,7 @@ gender_dict = create_dict(range(len(gender_y_tmp)), gender_y_tmp)
 (graph, gender_y)  = parse_mat.create_graph(adj_matrix_tmp,gender_dict,'gender',0,None,'yes')
 
 
-percent_initially_labelled = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+percent_initially_labelled = [0.01, 0.05, 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
 
 random_seed_list = [1, 12345, 837, 2841, 4293, 6305, 6746, 9056, 9241, 9547]
@@ -126,6 +128,13 @@ def ZGL(adj_matrix_gender,gender_y,percent_initially_labelled, num_iter):
     for j in range(len(classes)):
         gender_y_update[gender_y_update == classes[j]] = class_labels[j]
         
+    cwd = os.getcwd()
+    print("ds data dir", cwd)
+        
+    data_cwd = cwd + '/index'
+    os.chdir(data_cwd)    
+    print(data_cwd)
+
     for i in range(len(percent_initially_labelled)):
         print(percent_initially_labelled[i]) 
     
@@ -136,12 +145,7 @@ def ZGL(adj_matrix_gender,gender_y,percent_initially_labelled, num_iter):
         auprc = []
         # f1 score
         f1 = []
-        cwd = os.getcwd()
-        print("ds data dir", cwd)
-        
-        data_cwd = cwd + '/index'
-        os.chdir(data_cwd)    
-        print(data_cwd)
+
         for j in range(len(random_seed_list)):
             #for train_index, test_index in k_fold.split(W_unordered, gender_y_update):
             train_index, test_index = get_train_test_10_split(data_cwd, percent_initially_labelled[i], random_seed_list[j])
@@ -230,8 +234,33 @@ A_tilde = ds_prepare(graph)
 
 (mean_accuracy_baselineDS,se_accuracy_baselineDS,mean_micro_auc_baselineDS,se_micro_auc_baselineDS,mean_wt_auc_baselineDS,se_wt_auc_baselineDS,mean_f1_baselineDS,se_f1_baselineDS,mean_auprc_baselineDS,se_auprc_baselineDS) = ZGL(np.array(A_tilde),gender_y,percent_initially_labelled, n_iter)
 
-# write the baseline result into an output file
+# write the baseline result into an csv file named baseline_results.csv
+cwd = os.getcwd()
+# set the output directory: cwd is /index, get the parents dir
+parent_cwd = os.path.dirname(cwd)
 
+# field names  
+col_names = ['Type', 'Labeled Percent', 'metric', '1%', '5%','10%','20%','30%','40%','50%','60%','70%','80%','90%'] 
+
+filename = parent_cwd + "/baseline_result.csv"
+
+# writing to csv file  
+with open(filename, 'w') as csvfile:  
+    # creating a csv writer object  
+    csvwriter = csv.writer(csvfile)  
+        
+    # writing the fields  
+    csvwriter.writerow(col_names)  
+        
+    # writing the data rows  
+    row1 = ["mean", "DS ORIG", "auroc"] + [str(i) for i in mean_wt_auc_baselineDS]
+    csvwriter.writerow(row1)
+    row2 = ["mean", "DS ORIG", "auroc"] + [str(i) for i in se_wt_auc_baselineDS]
+    csvwriter.writerow(row2)
+    row3 = ["mean", "DS ORIG", "auroc"] + [str(i) for i in mean_accuracy_baselineDS]
+    csvwriter.writerow(row3)
+    row4 = ["mean", "DS ORIG", "auroc"] + [str(i) for i in se_accuracy_baselineDS]
+    csvwriter.writerow(row4)
 
 
 
