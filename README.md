@@ -58,7 +58,7 @@ Running any one of the PSL model will automatically generate the train-test spli
 To run the baseline decoupled smoothing model, run `baseline_ds.py`.
 
 
-### Evaluatation
+### Evaluation
 To run the evaluation of each models, run `evaluation.py`, which will generate the two plots in Figure 3 in the paper.
 
 ### Citation
