@@ -18,6 +18,9 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 2. Save raw datasets in placeholder folder data. They should be in the following form: `Amherst41.mat`.
 
 ### Reproducing results
+
+#### Set permissions:
+
 Make sure that permissions are set so you can run these scripts: 
 ```
 chmod +x generate_data.sh
