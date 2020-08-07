@@ -7,3 +7,4 @@ results-old/
 /index/
 /data/Amherst41.mat
 *csv
+/data/*.txt
