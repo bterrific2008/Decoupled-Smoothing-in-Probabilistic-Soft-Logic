@@ -9,6 +9,12 @@ from matplotlib.ticker import FixedLocator, MultipleLocator
 from sklearn.metrics import roc_auc_score, average_precision_score
 
 
+AUROC_METRIC = "auroc"
+CAT_METRIC = "cat"
+GRAPH_NAME = {AUROC_METRIC: 'AUROC',
+              CAT_METRIC: 'Categorical Accuracy'}
+
+
 def read_predictions(method, data_nm, random_seed, pct_lbl, learn_eval='eval'):
     # set the working directory and import helper functions
     # get the current working directory and then redirect into the functions under code
@@ -59,18 +65,18 @@ def read_truth(data_nm, random_seed, pct_lbl, learn_eval='eval'):
     return truth
 
 
-def read_baseline_results(filepath):
+def read_baseline_results(filepath, metrics):
     if filepath:
         base_ds_mean = {}
         base_ds_std = {}
         with open(filepath) as f:
             reader = csv.reader(f, delimiter=',')
-            next(reader, None) # skip header
+            next(reader, None)  # skip header
             for row in reader:
-                if row[0] == 'mean':
-                    base_ds_mean[row[1]] = [row[2], *list(map(float, row[3:]))]
-                if row[0] == 'se':
-                    base_ds_std[row[1]] = [row[2], *list(map(float, row[3:]))]
+                if row[0] == 'mean' and row[2] in metrics:
+                    base_ds_mean[row[1]] = {row[2]: list(map(float, row[3:]))}
+                if row[0] == 'se' and row[2] in metrics:
+                    base_ds_std[row[1]] = {row[2]: list(map(float, row[3:]))}
         return base_ds_mean, base_ds_std
     return None, None
 
@@ -80,8 +86,6 @@ def find_tptn(predictions, truth):
     y_score = []
     tp = []
     tp_score = []
-    tn = []
-    tn_score = []
     for node in predictions.keys():
         if node in truth:
             # find truth data per node, and associated score
@@ -92,11 +96,7 @@ def find_tptn(predictions, truth):
             tp.append(int(2 == truth[node]))
             tp_score.append(predictions[node][2])
 
-            # find true negatives
-            tn.append(int(1 == truth[node]))
-            tn_score.append(predictions[node][1])
-
-    return y_true, y_score, tp, tp_score, tn, tn_score
+    return y_true, y_score, tp, tp_score
 
 
 # find roc and prc scores
@@ -111,7 +111,7 @@ def create_graph(pct_list, results, metric, base_ds_mean=None, base_ds_std=None)
     npct_list = np.array(pct_list) * 100
 
     # title, labels
-    ax.set_title('PSL-DS {} Scores'.format(metric), fontsize=20)
+    ax.set_title('PSL-DS {} Scores'.format(GRAPH_NAME[metric]), fontsize=20)
     ax.set_xlabel('Percent of Nodes Initially Labeled').set_fontsize(15)
     ax.set_ylabel(metric).set_fontsize(15)
 
@@ -137,19 +137,20 @@ def create_graph(pct_list, results, metric, base_ds_mean=None, base_ds_std=None)
 
     if base_ds_mean and base_ds_std:
         for baseline_key in base_ds_mean.keys():
-            ax.errorbar(npct_list, base_ds_mean[baseline_key][1:],
-                        label=baseline_key, fmt='--o', elinewidth=3, capthick=2, color=base_ds_mean[baseline_key][0])
+            ax.errorbar(npct_list, base_ds_mean[baseline_key][metric],
+                        label=baseline_key, fmt='--o', elinewidth=3, capthick=2,
+                        color='blueviolet')
 
     # draw the error bars
     for name, mean, std, color, line_format in results[2:]:
         ax.errorbar(npct_list, mean, label=name, fmt=line_format, elinewidth=3,
                     capthick=2, color=color)
 
-    # plt.legend(loc="upper left", prop=dict(size=8))
-    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-    plt.savefig('PSL-DS {} Figure'.format(metric), figsize=(10, 10), dpi=100)
+    plt.legend(loc="upper left", prop=dict(size=8))
+    plt.legend(loc='upper left', borderaxespad=0.)
+    plt.savefig('PSL-DS {} Figure'.format(metric), dpi=100)
 
-    # add the legend
+    """# add the legend
     figlegend = plt.figure()
     ax_leg = figlegend.add_subplot(111)
     legend = ax_leg.legend(*ax.get_legend_handles_labels(), loc='center', ncol=6, frameon=False)
@@ -158,8 +159,8 @@ def create_graph(pct_list, results, metric, base_ds_mean=None, base_ds_std=None)
     # plt.show()
     # TODO fix bug where both appear the same
     figlegend.savefig('PSL-DS {} Legend'.format(metric),
-                     bbox_inches=legend.get_window_extent().transformed(
-                         figlegend.dpi_scale_trans.inverted()))
+                      bbox_inches=legend.get_window_extent().transformed(
+                          figlegend.dpi_scale_trans.inverted()))"""
     fig.clf()
 
 
@@ -204,19 +205,15 @@ def write_to_csv(evaluation_results, metrics, pct_list, random_seeds):
 def create_all_graphs(evaluation_results, metrics, models, pct_list, random_seeds, base_ds_mean,
                       base_ds_std):
     color_map = {'cli_one_hop': 'royalblue',
-                 'cli_oh_prior': 'royalblue',
-                 'cli_one_hop_gpp': 'royalblue',
                  'cli_two_hop': 'orange',
                  'cli_decoupled_smoothing': 'green',
                  'cli_decoupled_smoothing_closefriend_t200': 'red',
                  'cli_decoupled_smoothing_closefriend': 'gray'}
-    label_name = {'cli_one_hop': '1-hop',
-                  'cli_oh_prior': '1-Hop',
-                  'cli_one_hop_gpp': '1-Hop',
-                  'cli_two_hop': '2-Hop',
-                  'cli_decoupled_smoothing': 'PSL-DS',
-                  'cli_decoupled_smoothing_closefriend_t200': 'DS Pref Con (200)',
-                  'cli_decoupled_smoothing_closefriend': 'DS Pref Con (normalized)'}
+    label_name = {'cli_one_hop': '1-Hop PSL',
+                  'cli_two_hop': '2-Hop PSL',
+                  'cli_decoupled_smoothing': 'DS PSL',
+                  'cli_decoupled_smoothing_closefriend_t200': 'DS-PC PSL (200)',
+                  'cli_decoupled_smoothing_closefriend': 'DS-PC PSL (normalized)'}
     format_guide = {'cli_one_hop': '--o',
                     'cli_oh_prior': '--o',
                     'cli_one_hop_gpp': '--o',
@@ -224,12 +221,6 @@ def create_all_graphs(evaluation_results, metrics, models, pct_list, random_seed
                     'cli_decoupled_smoothing': '-o',
                     'cli_decoupled_smoothing_closefriend_t200': '-o',
                     'cli_decoupled_smoothing_closefriend': '-o'}
-
-    metric_name = {'tp_roc': 'AUROC',
-                   'tp_prc': 'AUPRC',
-                   'tn_roc': 'TN AUROC',
-                   'tn_prc': 'TN AUPRC',
-                   'cat': 'Categorical Accuracy'}
 
     for metric in metrics:
         results = []
@@ -242,7 +233,7 @@ def create_all_graphs(evaluation_results, metrics, models, pct_list, random_seed
             results.append(
                 (label_name[model], mean_values, std_values, color_map[model], format_guide[model]))
 
-        create_graph(pct_list, results, metric_name[metric], base_ds_mean, base_ds_std)
+        create_graph(pct_list, results, metric, base_ds_mean, base_ds_std)
 
 
 def evaluate(models, metrics, pct_list, random_seeds):
@@ -263,30 +254,19 @@ def evaluate(models, metrics, pct_list, random_seeds):
             evaluation_results[metric][seed] = {}
         for model in models:
             tp_roc = []
-            tp_prc = []
-            tn_roc = []
-            tn_prc = []
             cat = []
             for pct in pct_list:
                 predictions = read_predictions(model, 'Amherst41', seed, pct)
                 truth = read_truth('Amherst41', seed, pct)
-                y_true, y_score, tp, tp_score, tn, tn_score = find_tptn(predictions, truth)
+                y_true, y_score, tp, tp_score = find_tptn(predictions, truth)
 
                 roc_score, prc_score = calculate_metrics(tp, tp_score)
                 tp_roc.append(roc_score)
-                tp_prc.append(prc_score)
-
-                roc_score, prc_score = calculate_metrics(tn, tn_score)
-                tn_roc.append(roc_score)
-                tn_prc.append(prc_score)
 
                 cat.append(np.mean(
                     np.equal(np.array(y_true).argmax(axis=-1), np.array(y_score).argmax(axis=-1))))
 
-            evaluation_values = {'tp_roc': tp_roc,
-                                 'tp_prc': tp_prc,
-                                 'tn_roc': tn_roc,
-                                 'tn_prc': tn_prc,
+            evaluation_values = {'auroc': tp_roc,
                                  'cat': cat}
 
             for metric in metrics:
@@ -305,16 +285,14 @@ def parse_arguments():
                                  'cli_decoupled_smoothing_closefriend_t200'],
                         help='specify which models to evaluate')
     parser.add_argument('-e', '--evaluation_metrics', nargs="*", type=str,
-                        default=['tp_roc', 'cat'],
+                        default=['auroc', 'cat'],
                         help='specify which metric you want to evaluate with (default is all)')
     parser.add_argument('-p', '--percentages', nargs='*', type=float,
-                        default=[0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95],
+                        default=[0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
                         help='specify which percentages to evaluate')
     parser.add_argument('-r', '--random_seeds', nargs='*', type=int,
                         default=[1, 12345, 837, 2841, 4293, 6305, 6746, 9056, 9241, 9547],
                         help='specify which random seeds to evaluate')
-
-    # TODO assert that baseline has same # as percentages
 
     args = parser.parse_args()
 
@@ -329,7 +307,7 @@ def main():
     random_seeds = args.random_seeds
     graph = args.graph
 
-    base_ds_mean, base_ds_std = read_baseline_results(args.baseline)
+    base_ds_mean, base_ds_std = read_baseline_results(args.baseline, metrics)
     evaluation_results = evaluate(models, metrics, percentages, random_seeds)
     write_to_csv(evaluation_results, metrics, percentages, random_seeds)
     if graph:
