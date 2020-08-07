@@ -19,11 +19,9 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 
 ### Set permissions
 
-Make sure that permissions are set so you can run these scripts: 
+Make sure that permissions are set so you can run the run scripts: 
 ```
-chmod +x generate_data.sh
-chmod +x run_method.sh
-chmod +x run_all.sh
+chmod -R +x *
 ```
 
 ### Reproducing results
