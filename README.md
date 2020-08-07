@@ -19,13 +19,28 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 
 ### Reproducing results
 
-1. PSL models:
+#### Set permissions:
 
-To reproduce the results, you can run `run_method.sh` or `run_all.sh`. Make sure that permissions are set so you can run these scripts: 
+Make sure that permissions are set so you can run these scripts: 
 ```
+chmod +x generate_data.sh
 chmod +x run_method.sh
 chmod +x run_all.sh
 ```
+
+#### Run the models:
+
+Step 1: Generate input files:
+To reproduce the results, first need to generate the predicate txts, run `generate_data.sh`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model.
+
+
+Step 2: run PSL models:
+
+To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. It takes the following positional parameters: 
+* data: what datafile you would like to use
+* method dir: this is the path to the directory you'd like the run
+
+For example, to reproduce the result for method `one hop` using the Amherst college as dataset, simply run `./run_all.sh Amherst41 cli_one_hop`.
 
 `run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
@@ -36,16 +51,8 @@ This takes the following positional parameters:
 * {learn|eval}: specify if you're learning or evaluating
 * method dir: this is the path to the directory you'd like the run (?)
 
-`run_all.sh`: This runs a selected method for all random seeds at all percentages
-
-This takes the following positional parameters: 
-* data: what datafile you would like to use
-* method dir: this is the path to the directory you'd like the run
 
 Output will be written in the following directory
-
-results/{method run}/{eval|learn}/{data used}/{random seed}/
-
 `results/decoupled-smoothing/{eval|learn}/{method run}/{data used}/{random seed}/`
 
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
@@ -53,13 +60,23 @@ The folder will also contain the a copy of the `base.data`, `gender.psl`, files 
 
 Running any one of the PSL model will automatically generate the train-test split as well as the txt file for the normalized closeFriend predicate.
 
-2. Baseline Decoupled smoothing model:
+Step 3: Run the baseline Decoupled smoothing model:
 
-To run the baseline decoupled smoothing model, run `baseline_ds.py`.
+To run the baseline decoupled smoothing model, run `baseline_ds.py`. It will generate a csv file contains the results of the baseline model named `baseline_result.csv`.
 
 
 ### Evaluation
 To run the evaluation of each models, run `evaluation.py`, which will generate the two plots in Figure 3 in the paper.
+
+
+### Requirements
+These experiments expect that you are running on a POSIX (Linux/Mac) system. The specific application dependencies are as follows:
+
+* Bash >= 4.0
+* PostgreSQL >= 9.5
+* Java >= 7
+* Git
+
 
 ### Citation
 
