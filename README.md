@@ -17,9 +17,7 @@ This repository set-up assumes that the FB100 (raw `.mat` files) have been acqui
 1. The Facebook100 (FB100) dataset is publicly available from the Internet Archive at https://archive.org/details/oxford-2005-facebook-matrix and other public repositories. Download the datasets.
 2. Save raw datasets in placeholder folder data. They should be in the following form: `Amherst41.mat`.
 
-### Reproducing results
-
-#### Set permissions:
+### Set permissions
 
 Make sure that permissions are set so you can run these scripts: 
 ```
@@ -28,7 +26,7 @@ chmod +x run_method.sh
 chmod +x run_all.sh
 ```
 
-#### Run the models:
+### Reproducing results
 
 **Step 1: Generate input files**
 
