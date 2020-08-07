@@ -17,25 +17,6 @@ function display_help() {
   exit 1
 }
 
-function generate_data() {
-  random_seed=$(printf "%04d" $1)
-  data_name=$2
-  train_test=$3
-
-  local logPath="${BASE_DATA_DIR}/${train_test}/${data_name}/01pct/${random_seed}rand/data_log.json"
-  echo "Log path: ${logPath}"
-
-  if [[ -e "${logPath}" ]]; then
-    echo "Output data already exists, skipping data generation"
-  elif [ "$train_test" = learn ]; then
-    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat --learn
-  else
-    echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat
-  fi
-}
-
 function run_psl() {
   local cliDir=$1
   local outDir=$2
@@ -148,7 +129,6 @@ function main() {
   trap exit SIGINT
 
   echo "data used: ${data_nm} | random seed: ${rand_sd} | percent labeled:${pct_lbl} | train test: ${learn_eval}"
-  generate_data "${rand_sd}" "${data_nm}" "${learn_eval}"
 
   for exampleDir in "$@"; do
     echo "running: ${exampleDir}"
