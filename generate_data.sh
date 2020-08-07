@@ -27,9 +27,10 @@ function generate_data() {
 
   if [[ -e "${logPath}" ]]; then
     echo "Output data already exists, skipping data generation"
-  elif [[ "$train_test" = learn ]]; then
+  fi
+  if [[ "$train_test" = learn ]]; then
     echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
-    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat --learn
+    python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat --learn --closefriend
   else
     echo "Generating data with seed ${random_seed} and data ${data_name} for ${train_test}"
     python3 write_psl_data_snowball.py --seed ${random_seed} --data ${data_name}.mat
