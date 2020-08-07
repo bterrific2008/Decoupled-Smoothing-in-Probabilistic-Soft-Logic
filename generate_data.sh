@@ -1,21 +1,5 @@
 #!/bin/bash
-# Run a decoupled smoothing method on a single data variation
-
-readonly THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly BASE_DATA_DIR="${THIS_DIR}/data"
-readonly BASE_OUT_DIR="${THIS_DIR}/results"
-
-readonly ADDITIONAL_PSL_OPTIONS='--int-ids -D random.seed=12345 -D log4j.threshold=debug -D log4j.threshold=TRACE --postgres btor'
-readonly ADDITIONAL_LEARN_OPTIONS='--learn GaussianProcessPrior -D weightlearning.evaluator=RankingEvaluator -D rankingevaluator.representative=AUROC'
-readonly ADDITIONAL_EVAL_OPTIONS='--infer --eval CategoricalEvaluator RankingEvaluator'
-
-# An identifier to differentiate the output of this script/experiment from other scripts.
-readonly RUN_ID='decoupled-smoothing'
-
-function display_help() {
-  echo "USAGE: $0 <data> <random seed> <percent labeled> {learn|eval} <method dir> ..."
-  exit 1
-}
+# Generates all data from given .mat file
 
 function generate_data() {
   random_seed=$(printf "%04d" $1)
