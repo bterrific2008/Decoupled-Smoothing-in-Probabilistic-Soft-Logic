@@ -69,10 +69,10 @@ To run the evaluation of each models, run `evaluation.py`, which will generate t
 ### Requirements
 These experiments expect that you are running on a POSIX (Linux/Mac) system. The specific application dependencies are as follows:
 
+* Python3
 * Bash >= 4.0
 * PostgreSQL >= 9.5
 * Java >= 7
-* Git
 
 
 ### Citation
