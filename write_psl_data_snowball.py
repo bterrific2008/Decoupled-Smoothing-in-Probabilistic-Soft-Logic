@@ -38,7 +38,7 @@ def generate_data(random_seed, school_data='Amherst41.mat', learn=False,
         write_closeFriend_predicate(adj_matrix)
 
     # write the data
-    for pct_label in [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    for pct_label in [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         print('Creating data for {} at {}% labeled for {} with random seed'.format(school_data,
                                                                                    pct_label,
                                                                                    "learning" if learn
