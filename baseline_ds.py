@@ -19,6 +19,9 @@ import csv
 
 import parsing as parse_mat
 
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 ## function to create + save dictionary of features
 def create_dict(key, obj):
     return(dict([(key[i], obj[i]) for i in range(len(key))]))
