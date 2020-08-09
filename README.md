@@ -28,7 +28,7 @@ chmod -R +x *
 
 **Step 1: Generate input files**
 
-To reproduce the results, first need to generate the predicate txts, run `generate_data.sh`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model. 
+To reproduce the results, first need to generate the predicate txts, run `./generate_data.sh {school name}`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model. 
 
 
 **Step 2: Run PSL models**
