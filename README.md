@@ -31,7 +31,7 @@ chmod -R +x *
 To reproduce the results, first need to generate the predicate txts, run `generate_data.sh`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model. 
 
 
-**Step 2: run PSL models**
+**Step 2: Run PSL models**
 
 To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. It takes the following positional parameters: 
 * data: what datafile you would like to use
@@ -57,7 +57,7 @@ The folder will also contain the a copy of the `base.data`, `gender.psl`, files 
 
 Running any one of the PSL model will automatically generate the train-test split as well as the txt file for the normalized closeFriend predicate.
 
-**Step 3: Run the baseline Decoupled smoothing model**
+**Step 3: Run baseline Decoupled Smoothing model**
 
 To run the baseline decoupled smoothing model, run `baseline_ds.py`. It will generate a csv file contains the results of the baseline model named `baseline_result.csv`.
 
