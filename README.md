@@ -38,7 +38,7 @@ For example, to generate data using Amherst college as dataset, simply run `./ge
 
 To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. 
 
-For example, to reproduce the result for method `one hop` using the Amherst college as dataset, simply run `./run_all.sh Amherst41 cli_one_hop`.
+For example, to reproduce the result for method `one-hop` using the Amherst college as dataset, simply run `./run_all.sh Amherst41 cli_one_hop`.
 
 `run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
