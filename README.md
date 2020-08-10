@@ -26,7 +26,7 @@ chmod -R +x *
 
 ### Reproducing results
 
-#### Step 1: Generate input files**
+#### Step 1: Generate input files
 
 To reproduce the results, first need to generate the predicate txts, run `./generate_data.sh {school name}`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model. 
 
@@ -65,7 +65,7 @@ The output will be written in the following directory:
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
 
-#### Step 3: Run baseline Decoupled Smoothing model**
+#### Step 3: Run baseline Decoupled Smoothing model
 
 To run the baseline decoupled smoothing model, run `baseline_ds.py`. It will generate a csv file contains the results of the baseline model named `baseline_result.csv`.
 
