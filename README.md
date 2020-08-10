@@ -50,8 +50,8 @@ This takes the following positional parameters:
 * method dir: this is the path to the directory you'd like the run (?)
 
 
-Output will be written in the following directory
-`results/decoupled-smoothing/{eval|learn}/{method run}/{data used}/{random seed}/`
+Output will be written in the following directory:
+`../results/decoupled-smoothing/{eval|learn}/{method run}/{data used}/{random seed}/`
 
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
