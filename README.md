@@ -36,21 +36,30 @@ For example, to generate data using Amherst college as dataset, simply run `./ge
 
 **Step 2: Run PSL models**
 
+*** Simple Exeucution: 
+
 To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. 
+
+This takes the following positional parameters: 
+* data: what datafile you would like to use
+* method dir: this is the path to the directory you'd like the run
+
 
 For example, to reproduce the result for method `one-hop` using the Amherst college as dataset, simply run `./run_all.sh Amherst41 cli_one_hop`.
 
-`run_method.sh`: This runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
+*** Advanced Execution
+
+If you need to get results for a more specific setting, run `./run_method.sh {data} {random seed} {precent labeled} {eval|learn} {method dir}`. It runs a selected method for a specified seed for a specified percentage for either learning or evaluation.
 
 This takes the following positional parameters: 
 * data: what datafile you would like to use
 * random seed: what seed to use
 * percent labeled: what percentage of labeled data
 * {learn|eval}: specify if you're learning or evaluating
-* method dir: this is the path to the directory you'd like the run (?)
+* method dir: this is the path to the directory you'd like the run
 
 
-Output will be written in the following directory:
+The output will be written in the following directory:
 `../results/decoupled-smoothing/{eval|learn}/{method run}/{data used}/{random seed}/`
 
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
