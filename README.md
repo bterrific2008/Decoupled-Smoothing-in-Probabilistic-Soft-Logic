@@ -30,12 +30,13 @@ chmod -R +x *
 
 To reproduce the results, first need to generate the predicate txts, run `./generate_data.sh {school name}`. It will automatically generate the files required to run the PSL models as well as the files to run the baseline model. 
 
+For example, to generate data using Amherst college as dataset, simply run `./generate_data.sh Amherst41`.
+
+
 
 **Step 2: Run PSL models**
 
-To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. It takes the following positional parameters: 
-* data: what datafile you would like to use
-* method dir: this is the path to the directory you'd like the run
+To reproduce the results of a specific PSL model, run  `./run_all.sh {data} {method dir}`. This will run a selected method for all random seeds at all percentages. 
 
 For example, to reproduce the result for method `one hop` using the Amherst college as dataset, simply run `./run_all.sh Amherst41 cli_one_hop`.
 
@@ -54,8 +55,6 @@ Output will be written in the following directory
 
 The directory will contain a set of folders for the inferences found at each percent labeled, named `inferred-predicates{pct labeled}`.
 The folder will also contain the a copy of the `base.data`, `gender.psl`, files and output logs from the runs.
-
-Running any one of the PSL model will automatically generate the train-test split as well as the txt file for the normalized closeFriend predicate.
 
 **Step 3: Run baseline Decoupled Smoothing model**
 
